@@ -1,0 +1,43 @@
+#EXTM3U x-tvg-url="https://raw.githubusercontent.com/AqFad2811/epg/main/epg.xml" refresh="1440"
+
+#EXTINF:-1 group-title="Radio" tvg-id="Eight FM" tvg-name="8 FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/8Fm.png",8 FM
+https://mifntechnology.github.io/siaranMy/radio/8Fm/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="Asyik FM" tvg-name="Asyik FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/AsyikFm.png",Asyik FM
+https://mifntechnology.github.io/siaranMy/radio/AsyikFm/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="Best FM" tvg-name="Best FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/bestfm.png",Best FM
+https://mifntechnology.github.io/siaranMy/radio/BestFm/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="ERA" tvg-name="Era FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/Era.png",Era FM
+https://mifntechnology.github.io/siaranMy/radio/Era/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="Fly FM" tvg-name="Fly FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/FlyFm.png",Fly FM
+https://mifntechnology.github.io/siaranMy/radio/FlyFm/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="Hitz FM" tvg-name="Hitz FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/HitzFm.png",Hitz FM
+https://mifntechnology.github.io/siaranMy/radio/HitzFm/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="Hot FM" tvg-name="Hot FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/HotFm.png",Hot FM
+https://mifntechnology.github.io/siaranMy/radio/HotFm/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="Johor FM" tvg-name="Johor FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/JohorFm.png",Johor FM
+https://mifntechnology.github.io/siaranMy/radio/JohorFm/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="Kool FM" tvg-name="Kool FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/Kool101.png",Kool FM
+https://mifntechnology.github.io/siaranMy/radio/BuletinFm/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="NASFM" tvg-name="Nasional FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/NasionalFm.png",Nasional FM
+https://mifntechnology.github.io/siaranMy/radio/NasionalFm/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="Klasik FM" tvg-name="Radio Klasik" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/RadioKlasik.png",Radio Klasik
+https://mifntechnology.github.io/siaranMy/radio/RadioKlasik/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="Ria FM" tvg-name="Ria FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/RiaFm.png",Ria FM
+https://mifntechnology.github.io/siaranMy/radio/RiaFm/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="Sinar FM" tvg-name="Sinar FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/SinarFm.png",Sinar FM
+https://mifntechnology.github.io/siaranMy/radio/SinarFm/playlist.m3u8
+
+#EXTINF:-1 group-title="Radio" tvg-id="Suria FM" tvg-name="Suria FM" tvg-logo="https://mifntechnology.github.io/siaranMy/logo/Suria.png",Suria FM
+https://mifntechnology.github.io/siaranMy/radio/SuriaFm/playlist.m3u8
