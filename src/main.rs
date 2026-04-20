@@ -28,6 +28,7 @@ struct App {
     playing_station: Option<String>,
     status: PlaybackStatus,
     player: Player,
+    list_height: usize,
 }
 
 impl App {
@@ -49,6 +50,7 @@ impl App {
             playing_station: None,
             status: PlaybackStatus::Stopped,
             player,
+            list_height: 20,
         })
     }
 
@@ -63,6 +65,7 @@ impl App {
             playing_station: None,
             status: PlaybackStatus::Stopped,
             player,
+            list_height: 20,
         })
     }
 
@@ -113,16 +116,15 @@ impl App {
     fn move_down(&mut self) {
         if !self.stations.is_empty() {
             self.selected = (self.selected + 1).min(self.stations.len() - 1);
-            let visible = 20;
-            if self.selected >= self.scroll_offset + visible {
-                self.scroll_offset = self.selected.saturating_sub(visible) + 1;
+            if self.selected >= self.scroll_offset + self.list_height {
+                self.scroll_offset = self.selected.saturating_sub(self.list_height) + 1;
             }
         }
     }
 
     fn move_page_up(&mut self) {
         if !self.stations.is_empty() {
-            let visible = 20;
+            let visible = self.list_height;
             self.selected = self.selected.saturating_sub(visible);
             self.scroll_offset = self.selected;
         }
@@ -130,7 +132,7 @@ impl App {
 
     fn move_page_down(&mut self) {
         if !self.stations.is_empty() {
-            let visible = 20;
+            let visible = self.list_height;
             self.selected = (self.selected + visible).min(self.stations.len() - 1);
             if self.selected >= self.scroll_offset + visible {
                 self.scroll_offset = self.selected.saturating_sub(visible) + 1;
@@ -148,8 +150,7 @@ impl App {
     fn move_end(&mut self) {
         if !self.stations.is_empty() {
             self.selected = self.stations.len() - 1;
-            let visible = 20;
-            self.scroll_offset = self.stations.len().saturating_sub(visible);
+            self.scroll_offset = self.stations.len().saturating_sub(self.list_height);
         }
     }
 }
@@ -233,7 +234,9 @@ fn ui(frame: &mut Frame, app: &mut App) {
         ])
         .split(frame.area());
 
-    let title = Paragraph::new(" Radio TUI ")
+    app.list_height = chunks[1].height.saturating_sub(2) as usize;
+
+    let title = Paragraph::new(" Malaysia Radio TUI ")
         .bold()
         .centered()
         .style(Style::default().fg(Color::Cyan))
@@ -282,7 +285,9 @@ fn ui(frame: &mut Frame, app: &mut App) {
         .thumb_style(Style::default().fg(Color::Gray))
         .track_style(Style::default().fg(Color::DarkGray));
 
-    let mut scroll_state = ScrollbarState::new(app.stations.len()).position(app.selected);
+    let mut scroll_state = ScrollbarState::new(app.stations.len())
+        .position(app.selected)
+        .viewport_content_length(app.list_height);
     frame.render_stateful_widget(scrollbar, chunks[1], &mut scroll_state);
 
     let help_text = Paragraph::new(
