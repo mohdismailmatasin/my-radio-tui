@@ -9,6 +9,10 @@ A terminal-based radio player built with Rust using the ratatui library.
 - Play, pause, and stop stations
 - Terminal UI with scrollable station list
 
+## Screenshot
+
+![My Radio TUI](screenshot.png)
+
 ## Controls
 
 | Key | Action |
