@@ -1,82 +1,124 @@
-# My Radio TUI (Malaysia Radio)
+# My Radio TUI
 
-A terminal-based radio player built with Rust using the ratatui library.
+A beautiful terminal-based radio player for Malaysian radio stations. Built with Rust.
+
+![My Radio TUI](screenshot.png)
+
+---
 
 ## Features
 
-- Browse and play internet radio stations from an M3U8 playlist
-- Keyboard navigation (Up/Down, PageUp/PageDown, Home/End)
-- Play, pause, and stop stations
-- Terminal UI with scrollable station list
+- **One-click playback** - Select and play radio stations instantly
+- **Keyboard navigation** - Full control without a mouse
+- **Beautiful interface** - Clean, modern TUI design
+- **Lightweight** - Minimal resource usage
 
-## Screenshot
+---
 
-![My Radio TUI](screenshot.png)
+## Quick Start
+
+```bash
+# Build
+cargo build --release
+
+# Run
+./target/release/my-radio-tui
+
+# Install system-wide
+sudo make install
+
+# Run after install
+my-radio-tui
+```
+
+---
 
 ## Controls
 
 | Key | Action |
 |-----|--------|
-| ↑/↓ | Navigate stations |
-| PgUp/PgDn | Page navigation |
-| Home/End | First/Last station |
-| Enter | Play selected station |
-| Space | Pause/Resume playback |
-| q/ESC | Quit |
+| `↑` / `↓` | Navigate stations |
+| `PgUp` / `PgDn` | Page up / down |
+| `Home` / `End` | First / last station |
+| `Enter` | Play selected station |
+| `Space` | Pause / Resume |
+| `q` / `Esc` | Quit |
 
-## Installation
+---
 
+## Installation Options
+
+### Option 1: Build from source
 ```bash
-# Build and install system-wide
+cargo build --release
 sudo make install
+```
 
-# Or install in user's cargo bin
+### Option 2: Install via Cargo
+```bash
 cargo install --path .
 ```
 
+---
+
 ## Uninstallation
 
+### Option 1: Make uninstall
 ```bash
-# Remove system-wide installation
 sudo make uninstall
+```
 
-# Or use the uninstall script
+### Option 2: Uninstall script
+```bash
 ./uninstall.sh
+```
 
-# Or uninstall from cargo
+### Option 3: Cargo uninstall
+```bash
 cargo uninstall my-radio-tui
 ```
 
-## Usage
-
-The application expects a playlist file at `playlist/malaysia-radio.m3u8`. After installation, the playlist is also available at `/usr/local/bin/playlist/malaysia-radio.m3u8`.
-
-## Building
-
-```bash
-cargo build --release
-./target/release/my-radio-tui
-```
+---
 
 ## Radio Stations
 
-The application includes the following Malaysian radio stations:
+| Station | Genre |
+|---------|-------|
+| 8 FM | Pop |
+| Asyik FM | Malay |
+| Best FM | Pop |
+| Era FM | Contemporary |
+| Fly FM | Pop |
+| Hitz FM | Pop |
+| Hot FM | Talk |
+| Johor FM | Regional |
+| Kool FM | Retro |
+| Nasional FM | National |
+| Radio Klasik | Classic |
+| Ria FM | Malay |
+| Sinar FM | Malay |
+| Suria FM | Malay |
 
-- 8 FM
-- Asyik FM
-- Best FM
-- Era FM
-- Fly FM
-- Hitz FM
-- Hot FM
-- Johor FM
-- Kool FM
-- Nasional FM
-- Radio Klasik
-- Ria FM
-- Sinar FM
-- Suria FM
+---
+
+## Requirements
+
+- Rust (latest stable)
+- mpv player (for audio playback)
+
+```bash
+# Install mpv on Ubuntu/Debian
+sudo apt install mpv
+
+# Install mpv on Arch Linux
+sudo pacman -S mpv
+
+# Install mpv on macOS
+brew install mpv
+```
+
+---
 
 ## License
 
-MIT
+MIT License - feel free to use and modify.
