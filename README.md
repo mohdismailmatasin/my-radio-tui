@@ -27,8 +27,24 @@ A terminal-based radio player built with Rust using the ratatui library.
 ## Installation
 
 ```bash
-cargo build --release
+# Build and install system-wide
 sudo make install
+
+# Or install in user's cargo bin
+cargo install --path .
+```
+
+## Uninstallation
+
+```bash
+# Remove system-wide installation
+sudo make uninstall
+
+# Or use the uninstall script
+./uninstall.sh
+
+# Or uninstall from cargo
+cargo uninstall my-radio-tui
 ```
 
 ## Usage
@@ -39,6 +55,7 @@ The application expects a playlist file at `playlist/malaysia-radio.m3u8`. After
 
 ```bash
 cargo build --release
+./target/release/my-radio-tui
 ```
 
 ## Radio Stations
