@@ -2,16 +2,16 @@
 
 set -e
 
-if [ -w /usr/local/bin ]; then
-    sudo=sudo
+if [ -w /usr/local/bin ] && [ -w /usr/local/share ]; then
+    SUDO=""
 else
-    sudo=sudo
+    SUDO="sudo"
 fi
 
 cargo uninstall my-radio-tui 2>/dev/null || true
 
 rm -f ~/.cargo/bin/my-radio-tui
-$sudo rm -f /usr/local/bin/my-radio-tui
-$sudo rm -rf /usr/local/bin/playlist
+$SUDO rm -f /usr/local/bin/my-radio-tui
+$SUDO rm -rf /usr/local/share/my-radio-tui
 
 echo "my-radio-tui has been uninstalled."

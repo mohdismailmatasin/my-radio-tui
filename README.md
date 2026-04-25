@@ -12,6 +12,7 @@ A beautiful terminal-based radio player for Malaysian radio stations. Built with
 - **Keyboard navigation** - Full control without a mouse
 - **Beautiful interface** - Clean, modern TUI design
 - **Lightweight** - Minimal resource usage
+- **Built-in station list** - Works after `cargo install` without extra files
 
 ---
 
@@ -59,6 +60,17 @@ sudo make install
 cargo install --path .
 ```
 
+`cargo install --path .` works on its own. The binary includes an embedded copy of the station playlist, so it does not require a separate playlist file to start.
+
+### Playlist loading order
+
+The app loads stations from the first playlist it finds:
+
+1. `./playlist/malaysia-radio.m3u8`
+2. `playlist/malaysia-radio.m3u8` next to the installed binary
+3. `/usr/local/share/my-radio-tui/malaysia-radio.m3u8`
+4. the embedded playlist compiled into the binary
+
 ---
 
 ## Uninstallation
@@ -87,15 +99,15 @@ cargo uninstall my-radio-tui
 | 8 FM | Pop |
 | Asyik FM | Malay |
 | Best FM | Pop |
+| Buletin FM | News |
 | Era FM | Contemporary |
 | Fly FM | Pop |
 | Hitz FM | Pop |
 | Hot FM | Talk |
 | Johor FM | Regional |
-| Kool FM | Retro |
 | Nasional FM | National |
 | Radio Klasik | Classic |
-| Ria FM | Malay |
+| Ria 89.7 FM | Malay |
 | Sinar FM | Malay |
 | Suria FM | Malay |
 
@@ -105,6 +117,7 @@ cargo uninstall my-radio-tui
 
 - Rust (latest stable)
 - mpv player (for audio playback)
+- Optional external playlist at `./playlist/malaysia-radio.m3u8` or `/usr/local/share/my-radio-tui/malaysia-radio.m3u8`
 
 ```bash
 # Install mpv on Ubuntu/Debian

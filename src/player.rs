@@ -1,5 +1,6 @@
 use anyhow::{anyhow, Result};
 use std::process::{Command, Stdio};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::thread;
 
@@ -12,17 +13,23 @@ pub enum PlaybackStatus {
     Error,
 }
 
+struct ManagedChild {
+    process: std::process::Child,
+}
+
 pub struct Player {
-    child: Arc<std::sync::Mutex<Option<std::process::Child>>>,
+    child: Arc<std::sync::Mutex<Option<ManagedChild>>>,
     status: Arc<std::sync::Mutex<PlaybackStatus>>,
+    generation: Arc<AtomicUsize>,
 }
 
 impl Player {
-    pub fn new() -> Result<Self> {
-        Ok(Self {
+    pub fn new() -> Self {
+        Self {
             child: Arc::new(std::sync::Mutex::new(None)),
             status: Arc::new(std::sync::Mutex::new(PlaybackStatus::Stopped)),
-        })
+            generation: Arc::new(AtomicUsize::new(0)),
+        }
     }
 
     fn get_stream_url(playlist_url: &str) -> Result<String> {
@@ -44,19 +51,27 @@ impl Player {
     }
 
     pub fn play(&self, url: &str) -> Result<()> {
-        self.stop();
+        self.stop_current_process();
 
-        let stream_url = match Self::get_stream_url(url) {
-            Ok(u) => u,
-            Err(_) => url.to_string(),
-        };
+        let generation = self.generation.fetch_add(1, Ordering::SeqCst) + 1;
+        let url = url.to_string();
 
-        let status = self.status.clone();
         let child = self.child.clone();
+        let generation_state = self.generation.clone();
+        let status = self.status.clone();
 
         *status.lock().unwrap() = PlaybackStatus::Loading;
 
         thread::spawn(move || {
+            let stream_url = match Self::get_stream_url(&url) {
+                Ok(resolved) => resolved,
+                Err(_) => url,
+            };
+
+            if generation_state.load(Ordering::SeqCst) != generation {
+                return;
+            }
+
             let result = Command::new("mpv")
                 .arg("--no-video")
                 .arg("--quiet")
@@ -66,16 +81,32 @@ impl Player {
                 .spawn();
 
             match result {
-                Ok(c) => {
+                Ok(mut process) => {
+                    if generation_state.load(Ordering::SeqCst) != generation {
+                        let _ = process.kill();
+                        let _ = process.wait();
+                        return;
+                    }
+
                     {
                         let mut guard = child.lock().unwrap();
-                        *guard = Some(c);
+                        if generation_state.load(Ordering::SeqCst) != generation {
+                            drop(guard);
+                            let _ = process.kill();
+                            let _ = process.wait();
+                            return;
+                        }
+
+                        *guard = Some(ManagedChild { process });
                     }
+
                     *status.lock().unwrap() = PlaybackStatus::Playing;
                 }
                 Err(e) => {
                     eprintln!("Failed to start mpv: {}", e);
-                    *status.lock().unwrap() = PlaybackStatus::Error;
+                    if generation_state.load(Ordering::SeqCst) == generation {
+                        *status.lock().unwrap() = PlaybackStatus::Error;
+                    }
                 }
             }
         });
@@ -84,11 +115,9 @@ impl Player {
     }
 
     pub fn stop(&self) {
+        self.generation.fetch_add(1, Ordering::SeqCst);
+        self.stop_current_process();
         *self.status.lock().unwrap() = PlaybackStatus::Stopped;
-        let mut guard = self.child.lock().unwrap();
-        if let Some(mut child) = guard.take() {
-            let _ = child.kill();
-        }
     }
 
     pub fn is_playing(&self) -> bool {
@@ -103,7 +132,7 @@ impl Player {
         if let Some(child) = self.child.lock().unwrap().as_mut() {
             let _ = Command::new("kill")
                 .arg("-STOP")
-                .arg(child.id().to_string())
+                .arg(child.process.id().to_string())
                 .spawn();
         }
         *self.status.lock().unwrap() = PlaybackStatus::Paused;
@@ -113,10 +142,18 @@ impl Player {
         if let Some(child) = self.child.lock().unwrap().as_mut() {
             let _ = Command::new("kill")
                 .arg("-CONT")
-                .arg(child.id().to_string())
+                .arg(child.process.id().to_string())
                 .spawn();
         }
         *self.status.lock().unwrap() = PlaybackStatus::Playing;
+    }
+
+    fn stop_current_process(&self) {
+        let mut guard = self.child.lock().unwrap();
+        if let Some(mut child) = guard.take() {
+            let _ = child.process.kill();
+            let _ = child.process.wait();
+        }
     }
 }
 

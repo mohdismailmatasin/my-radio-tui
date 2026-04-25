@@ -1,13 +1,13 @@
 mod parser;
 mod player;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use crossterm::{
     event::{self, Event, KeyCode, KeyEventKind},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use parser::{parse_m3u8, Station};
+use parser::{parse_m3u8, parse_m3u8_str, Station};
 use player::{PlaybackStatus, Player};
 use ratatui::{
     backend::CrosstermBackend,
@@ -21,6 +21,8 @@ use ratatui::{
 use std::io;
 use std::path::PathBuf;
 
+const EMBEDDED_PLAYLIST: &str = include_str!("../playlist/malaysia-radio.m3u8");
+
 struct App {
     stations: Vec<Station>,
     selected: usize,
@@ -33,38 +35,13 @@ struct App {
 
 impl App {
     fn new() -> Result<Self> {
-        let playlist_path = std::env::current_dir()?.join("playlist/malaysia-radio.m3u8");
-        if !playlist_path.exists() {
-            let installed_path = PathBuf::from("/usr/local/bin/playlist/malaysia-radio.m3u8");
-            if installed_path.exists() {
-                return Self::new_with_path(installed_path);
-            }
-        }
-        let stations = parse_m3u8(&playlist_path)?;
-        let player = Player::new()?;
-
         Ok(Self {
-            stations,
+            stations: load_stations()?,
             selected: 0,
             scroll_offset: 0,
             playing_station: None,
             status: PlaybackStatus::Stopped,
-            player,
-            list_height: 20,
-        })
-    }
-
-    fn new_with_path(playlist_path: PathBuf) -> Result<Self> {
-        let stations = parse_m3u8(&playlist_path)?;
-        let player = Player::new()?;
-
-        Ok(Self {
-            stations,
-            selected: 0,
-            scroll_offset: 0,
-            playing_station: None,
-            status: PlaybackStatus::Stopped,
-            player,
+            player: Player::new(),
             list_height: 20,
         })
     }
@@ -155,17 +132,42 @@ impl App {
     }
 }
 
+struct Tui {
+    terminal: Terminal<CrosstermBackend<io::Stdout>>,
+}
+
+impl Tui {
+    fn new() -> Result<Self> {
+        enable_raw_mode()?;
+        let mut stdout = io::stdout();
+        execute!(stdout, EnterAlternateScreen)?;
+        let backend = CrosstermBackend::new(stdout);
+
+        Ok(Self {
+            terminal: Terminal::new(backend)?,
+        })
+    }
+
+    fn draw(&mut self, app: &mut App) -> Result<()> {
+        self.terminal.draw(|f| ui(f, app))?;
+        Ok(())
+    }
+}
+
+impl Drop for Tui {
+    fn drop(&mut self) {
+        let _ = disable_raw_mode();
+        let _ = execute!(self.terminal.backend_mut(), LeaveAlternateScreen);
+        let _ = self.terminal.show_cursor();
+    }
+}
+
 fn main() -> Result<()> {
     let mut app = App::new()?;
-
-    enable_raw_mode()?;
-    let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen)?;
-    let backend = CrosstermBackend::new(stdout);
-    let mut terminal = Terminal::new(backend)?;
+    let mut tui = Tui::new()?;
 
     loop {
-        terminal.draw(|f| ui(f, &mut app))?;
+        tui.draw(&mut app)?;
 
         if event::poll(std::time::Duration::from_millis(100))? {
             if let Event::Key(key) = event::read()? {
@@ -178,10 +180,8 @@ fn main() -> Result<()> {
                         KeyCode::Home => app.move_home(),
                         KeyCode::End => app.move_end(),
                         KeyCode::Enter => app.play_station(),
-                        KeyCode::Char(' ') => {
-                            if app.playing_station.is_some() {
-                                app.toggle_playback();
-                            }
+                        KeyCode::Char(' ') if app.playing_station.is_some() => {
+                            app.toggle_playback()
                         }
                         KeyCode::Char('q') | KeyCode::Esc => {
                             app.stop();
@@ -196,11 +196,42 @@ fn main() -> Result<()> {
         app.update_status();
     }
 
-    execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-    disable_raw_mode()?;
-    terminal.show_cursor()?;
-
     Ok(())
+}
+
+fn load_stations() -> Result<Vec<Station>> {
+    for path in playlist_candidates()? {
+        if path.is_file() {
+            return parse_m3u8(&path)
+                .with_context(|| format!("failed to load playlist from {}", path.display()));
+        }
+    }
+
+    parse_m3u8_str(EMBEDDED_PLAYLIST).context("failed to load embedded playlist")
+}
+
+fn playlist_candidates() -> Result<Vec<PathBuf>> {
+    let mut candidates = Vec::new();
+
+    if let Ok(current_dir) = std::env::current_dir() {
+        candidates.push(current_dir.join("playlist/malaysia-radio.m3u8"));
+    }
+
+    let exe_path = std::env::current_exe().context("failed to resolve executable path")?;
+    if let Some(exe_dir) = exe_path.parent() {
+        candidates.push(exe_dir.join("playlist/malaysia-radio.m3u8"));
+
+        if let Some(prefix_dir) = exe_dir.parent() {
+            candidates.push(prefix_dir.join("share/my-radio-tui/malaysia-radio.m3u8"));
+        }
+    }
+
+    candidates.push(PathBuf::from(
+        "/usr/local/share/my-radio-tui/malaysia-radio.m3u8",
+    ));
+
+    candidates.dedup();
+    Ok(candidates)
 }
 
 fn get_status_text(status: PlaybackStatus) -> &'static str {

@@ -1,6 +1,0 @@
-/home/mohdismailmatasin/Desktop/my-radio-tui/target/release/deps/zerofrom_derive-79141b439315dfc3.d: /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerofrom-derive-0.1.7/src/lib.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerofrom-derive-0.1.7/src/visitor.rs
-
-/home/mohdismailmatasin/Desktop/my-radio-tui/target/release/deps/libzerofrom_derive-79141b439315dfc3.so: /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerofrom-derive-0.1.7/src/lib.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerofrom-derive-0.1.7/src/visitor.rs
-
-/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerofrom-derive-0.1.7/src/lib.rs:
-/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerofrom-derive-0.1.7/src/visitor.rs:
